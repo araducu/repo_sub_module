@@ -1,0 +1,142 @@
+<?xml version="1.0"?>
+<testCase version="9.0.4.202208111512">
+    <general>
+        <language>Python</language>
+        <xPathVersion>XPATH31</xPathVersion>
+    </general>
+    <testbed>project://getDailyHoroscope/topologies/topology1.tbml</testbed>
+    <procedures>
+        <item name="main">
+            <steps>
+                <item guid="0dd4af53-1db1-4c05-9212-5fd351b850d4" action="open" session="s1">
+                    <command>
+                        <body>device:pc1#ssh</body>
+                    </command>
+                    <applicationProperties type="com.fnfr.svt.documents.OpenStepPropertyGroup">
+                        <stepProperties type="com.fnfr.svt.editors.terminal.documents.StepDefaultProperties">
+                            <promptProperties>
+                                <stepPrompts>
+                                    <item name="prompt1" MatchMethod="WILDCARD">
+                                        <Content>*#</Content>
+                                    </item>
+                                    <item name="prompt2" MatchMethod="WILDCARD">
+                                        <Content>*</Content>
+                                    </item>
+                                </stepPrompts>
+                            </promptProperties>
+                        </stepProperties>
+                        <sessionProperties type="com.fnfr.svt.applications.ssh.documents.SSHProperties">
+                            <ipAddress inherit="false">vds-alraducu.spirenteng.com</ipAddress>
+                            <user inherit="false">root</user>
+                            <password inherit="false" masked="true">iRyLc4KQj80=</password>
+                        </sessionProperties>
+                        <sessionClass type="com.fnfr.svt.documents.EmptyPropertyGroup"/>
+                        <sessionVersion type="com.fnfr.svt.documents.EmptyPropertyGroup"/>
+                    </applicationProperties>
+                </item>
+                <item guid="33d905a0-a775-4d3a-823b-cc57836a8f49" action="command" session="s1">
+                    <command>
+                        <body>curl [param(&apos;website&apos;)]</body>
+                    </command>
+                    <postProcessing>
+                        <storeResponseAt>output</storeResponseAt>
+                        <appendRespToFile inherit="false">false</appendRespToFile>
+                    </postProcessing>
+                    <applicationProperties type="com.fnfr.svt.editors.terminal.documents.StepDefaultProperties">
+                        <promptProperties>
+                            <stepPrompts>
+                                <item name="prompt1" MatchMethod="WILDCARD">
+                                    <Content>*#</Content>
+                                </item>
+                            </stepPrompts>
+                        </promptProperties>
+                    </applicationProperties>
+                </item>
+                <item guid="1c0e7167-883b-44d7-adb7-9c14c8c0cba2" action="return" skip="true">
+                    <command>
+                        <body>[response(&apos;output&apos;)]</body>
+                    </command>
+                    <applicationProperties type="com.fnfr.svt.documents.EmptyPropertyGroup"/>
+                </item>
+                <item guid="3995b1c8-691c-490e-8afc-f65367cfd064" action="eval" useFieldsInCommand="false">
+                    <command>
+                        <body>data = response(&apos;output&apos;).split(&apos;&lt;p class=&quot;mt-sm mb-sm font-sm gray-dark&quot;&gt;&apos;)</body>
+                    </command>
+                    <applicationProperties type="com.fnfr.svt.documents.EmptyPropertyGroup"/>
+                </item>
+                <item guid="399792be-e4a3-4cd1-9aa6-ce539dbe57c7" action="eval" useFieldsInCommand="false">
+                    <command>
+                        <body>horoscope = data[1].split(&quot;&lt;/p&gt;&lt;figure data-qa=&quot;)</body>
+                    </command>
+                    <applicationProperties type="com.fnfr.svt.documents.EmptyPropertyGroup"/>
+                </item>
+                <item guid="60bc33cb-3c60-4cb6-ac45-667b7f587209" action="command" session="s1">
+                    <command>
+                        <body>echo [horoscope[0]]</body>
+                    </command>
+                    <postProcessing>
+                        <analysisRules>
+                            <item>
+                                <extractorInfo extractorType="query">
+                                    <extractorProperties type="com.fnfr.svt.mapping.execution.extractors.QueryDataExtractorPropertyGroup">
+                                        <query>isEmpty()</query>
+                                    </extractorProperties>
+                                </extractorInfo>
+                                <processorInfo ruleType="assert">
+                                    <ruleProperties type="com.fnfr.svt.execution.builtin.processors.AssertionPropertyGroup">
+                                        <expression>value == &quot;false&quot;</expression>
+                                        <actionsWhenTrue>
+                                            <item actionId="DeclareExecutionIssue">
+                                                <actionProperties type="com.fnfr.svt.execution.builtin.actions.ExecutionIssuePropertyGroup" severity="OK">
+                                                    <message>{auto_message_true}</message>
+                                                </actionProperties>
+                                            </item>
+                                            <item actionId="PassTestIfNotAlreadyFailed">
+                                                <actionProperties type="com.fnfr.svt.documents.EmptyPropertyGroup"/>
+                                            </item>
+                                        </actionsWhenTrue>
+                                        <actionsWhenFalse>
+                                            <item actionId="DeclareExecutionIssue">
+                                                <actionProperties type="com.fnfr.svt.execution.builtin.actions.ExecutionIssuePropertyGroup">
+                                                    <message>{auto_message_false}</message>
+                                                </actionProperties>
+                                            </item>
+                                            <item actionId="FailTest">
+                                                <actionProperties type="com.fnfr.svt.documents.EmptyPropertyGroup"/>
+                                            </item>
+                                        </actionsWhenFalse>
+                                    </ruleProperties>
+                                </processorInfo>
+                            </item>
+                        </analysisRules>
+                        <storeResponseAt>final</storeResponseAt>
+                        <appendRespToFile inherit="false">false</appendRespToFile>
+                    </postProcessing>
+                    <nestedSteps>
+                        <item guid="91be92aa-bb40-4abe-a5a9-5cecd40c3921" action="return">
+                            <command>
+                                <body>[horoscope[0]]</body>
+                            </command>
+                            <applicationProperties type="com.fnfr.svt.documents.EmptyPropertyGroup"/>
+                        </item>
+                    </nestedSteps>
+                    <applicationProperties type="com.fnfr.svt.editors.terminal.documents.StepDefaultProperties">
+                        <promptProperties>
+                            <stepPrompts>
+                                <item name="prompt1" MatchMethod="WILDCARD">
+                                    <Content>*#</Content>
+                                </item>
+                                <item name="prompt2" MatchMethod="WILDCARD">
+                                    <Content>*</Content>
+                                </item>
+                            </stepPrompts>
+                        </promptProperties>
+                    </applicationProperties>
+                </item>
+            </steps>
+            <arguments>
+                <item name="output"/>
+            </arguments>
+        </item>
+    </procedures>
+</testCase>
